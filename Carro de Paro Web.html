@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Carro de Paro Digital · CRS Hospital Provincia Cordillera</title>
+<meta name="description" content="Consulta rápida y segura de medicamentos del carro de paro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#00707D;
+  --teal-deep:#004E58;
+  --navy:#0B2E4E;
+  --paper:#F3F6F6;
+  --surface:#FFFFFF;
+  --surface-2:#EDF2F2;
+  --ink:#101820;
+  --ink-soft:#51616B;
+  --ink-faint:#8598A1;
+  --line:#DEE6E7;
+
+  --risk4:#C2292B; --risk4-soft:#FBEAEA; --risk4-bd:#F1C6C6;
+  --risk3:#BE5E0A; --risk3-soft:#FCEEE0; --risk3-bd:#EFCFA6;
+  --risk2:#8C6E00; --risk2-soft:#FAF5D9; --risk2-bd:#E9DA9E;
+  --risk1:#57646E; --risk1-soft:#EEF1F2; --risk1-bd:#D8DFE1;
+  --dil:#3E7CB1; --dil-soft:#EAF2FA; --dil-bd:#C9DCEC;
+
+  --shadow-sm: 0 1px 2px rgba(11,46,78,.06), 0 1px 1px rgba(11,46,78,.04);
+  --shadow-md: 0 8px 24px rgba(11,46,78,.10), 0 2px 6px rgba(11,46,78,.06);
+  --shadow-lg: 0 24px 48px rgba(11,46,78,.16);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html.night{
+  --paper:#0A1418;
+  --surface:#101C22;
+  --surface-2:#0D181D;
+  --ink:#EAF3F3;
+  --ink-soft:#A9BDC3;
+  --ink-faint:#6E838B;
+  --line:#1E2D33;
+
+  --risk4:#FF7A6E; --risk4-soft:#2A1414; --risk4-bd:#4A2320;
+  --risk3:#FFA85C; --risk3-soft:#2A1E0E; --risk3-bd:#4A3418;
+  --risk2:#EAD35B; --risk2-soft:#26220E; --risk2-bd:#453D1A;
+  --risk1:#9FB3BB; --risk1-soft:#161F23; --risk1-bd:#263339;
+  --dil:#7FB2DE; --dil-soft:#0F1E29; --dil-bd:#233D51;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.5);
+  --shadow-lg: 0 24px 48px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease, color .35s ease;
+  min-height:100vh;
+}
+body.ficha-open{overflow:hidden;}
+h1,h2,h3{margin:0;font-family:var(--font-display);}
+p{margin:0;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
+input{font-family:inherit;}
+.tabular{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+::selection{background:var(--teal);color:#fff;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+}
+
+.ecg-wrap{position:relative; width:100%; height:26px; overflow:hidden; line-height:0;}
+.ecg-wrap svg{display:block; width:200%; height:100%;}
+.ecg-line{fill:none; stroke:var(--teal); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:.9;}
+html.night .ecg-line{stroke:#3FD9C7;}
+.ecg-anim{stroke-dasharray:900; stroke-dashoffset:900; animation: ecgDraw 2.6s cubic-bezier(.4,.1,.2,1) forwards;}
+@keyframes ecgDraw{ to{ stroke-dashoffset:0; } }
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--navy); color:#fff;}
+.topbar__inner{max-width:1240px; margin:0 auto; padding:16px 20px 14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+.brandmark{
+  width:42px; height:42px; border-radius:11px; flex:none;
+  background:linear-gradient(155deg, var(--teal) 0%, var(--teal-deep) 100%);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+  overflow:hidden;
+}
+.brandmark img{width:100%; height:100%; object-fit:contain; padding:5px;}
+.brandmark svg.brandmark-fallback{width:24px; height:24px; display:none;}
+.brand-text h1{font-size:17px; font-weight:700; letter-spacing:.01em; line-height:1.15; color:#fff;}
+.brand-text p{font-size:11.5px; color:rgba(255,255,255,.62); font-weight:500; margin-top:2px;}
+
+.night-toggle{
+  margin-left:auto; display:flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14);
+  padding:7px 12px 7px 7px; border-radius:999px; color:#fff; font-size:12.5px; font-weight:600;
+  transition:background .2s;
+}
+.night-toggle:hover{background:rgba(255,255,255,.16);}
+.night-toggle__dot{
+  width:22px; height:22px; border-radius:50%; background:#fff; flex:none;
+  display:flex; align-items:center; justify-content:center; color:var(--navy);
+  transition:transform .3s;
+}
+.night-toggle__dot svg{width:13px;height:13px;}
+html.night .night-toggle__dot{transform:rotate(180deg);}
+
+.topbar__ecg{background:var(--teal-deep);}
+
+.searchbar-zone{background:var(--navy); padding-bottom:18px;}
+.searchbar-inner{max-width:1240px; margin:0 auto; padding:0 20px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+.search-shell{position:relative; flex:1 1 320px; min-width:0;}
+.search-shell svg.icon{position:absolute; left:15px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--ink-faint); pointer-events:none;}
+#buscador{
+  width:100%; padding:13px 14px 13px 42px; border-radius:12px; border:none;
+  font-size:15.5px; background:var(--surface); color:var(--ink);
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+  outline:2px solid transparent; outline-offset:2px;
+}
+#buscador:focus{outline-color:#3FD9C7;}
+.stat-pill{
+  flex:none; display:flex; align-items:baseline; gap:5px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.13);
+  padding:9px 13px; border-radius:12px; color:#fff;
+}
+.stat-pill b{font-family:var(--font-display); font-size:16px;}
+.stat-pill span{font-size:10.5px; color:rgba(255,255,255,.6); font-weight:600; text-transform:uppercase; letter-spacing:.05em;}
+.stat-pill-desktop{display:none;}
+@media(min-width:760px){.stat-pill-desktop{display:flex;}}
+
+.layout{max-width:1240px; margin:0 auto; padding:22px 20px 60px; display:grid; grid-template-columns: 1fr; gap:22px;}
+@media(min-width:920px){.layout{grid-template-columns: 232px 1fr; align-items:start;}}
+
+.sidebar{display:none;}
+@media(min-width:920px){
+  .sidebar{display:block; position:sticky; top:118px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm);}
+}
+.sidebar h3{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-faint); font-weight:700; margin-bottom:10px;}
+.row-nav{display:flex; flex-direction:column; gap:6px; margin-bottom:20px;}
+.row-nav button{display:flex; align-items:center; gap:9px; text-align:left; padding:9px 10px; border-radius:9px; font-size:13px; font-weight:600; color:var(--ink-soft); transition:background .15s, color .15s;}
+.row-nav button:hover{background:var(--surface-2);}
+.row-nav button.active{background:var(--surface-2); color:var(--ink);}
+.row-dot{width:9px; height:9px; border-radius:50%; flex:none;}
+.legend{display:flex; flex-direction:column; gap:8px; font-size:12px; color:var(--ink-soft);}
+.legend-item{display:flex; align-items:center; gap:8px;}
+.legend-swatch{width:14px; height:14px; border-radius:4px; flex:none;}
+.legend-swatch.mar{background:var(--risk4);}
+.legend-swatch.lasa{background:var(--risk3);}
+.legend-swatch.dil{background:var(--dil);}
+
+.chip-scroller{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 6px; -webkit-overflow-scrolling:touch;}
+.chip-scroller::-webkit-scrollbar{display:none;}
+@media(min-width:920px){.chip-scroller{display:none;}}
+.chip{flex:none; padding:8px 14px; border-radius:999px; font-size:12.5px; font-weight:700; background:var(--surface); border:1.5px solid var(--line); color:var(--ink-soft); white-space:nowrap;}
+.chip.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+
+.fila-section{margin-bottom:34px; scroll-margin-top:130px;}
+.fila-head{display:flex; align-items:baseline; gap:10px; margin-bottom:14px; padding-left:2px;}
+.fila-head .bar{width:5px; align-self:stretch; border-radius:3px; min-height:34px;}
+.fila-head h2{font-size:20px; font-weight:700; letter-spacing:-.01em;}
+.fila-head p{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--ink-faint); margin-top:2px;}
+
+.grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:12px;}
+
+.med-card{
+  --risk: var(--risk1);
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+  padding:16px 16px 14px; cursor:pointer; text-align:left;
+  box-shadow:var(--shadow-sm);
+  border-left:5px solid var(--risk);
+  transition:transform .12s ease, box-shadow .12s ease;
+  display:flex; flex-direction:column; gap:10px; width:100%;
+}
+.med-card:hover{transform:translateY(-2px); box-shadow:var(--shadow-md);}
+.med-card:active{transform:translateY(0) scale(.99);}
+.med-card.is-diluyente{cursor:default;}
+.med-card.is-diluyente:hover{transform:none; box-shadow:var(--shadow-sm);}
+.med-card__top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
+.med-card__name{font-size:19px; font-weight:700; line-height:1.1; letter-spacing:-.01em;}
+.med-card__pres{font-size:12.5px; color:var(--ink-soft); font-weight:600;}
+
+.risk-icon{width:26px; height:26px; flex:none; border-radius:7px; display:flex; align-items:center; justify-content:center;}
+.risk-icon.mar{background:var(--risk4-soft); color:var(--risk4);}
+.risk-icon.lasa{background:var(--risk3-soft); color:var(--risk3);}
+.risk-icon.dil{background:var(--dil-soft); color:var(--dil);}
+.risk-icon svg{width:15px; height:15px;}
+
+.dose-preview{background:var(--surface-2); border-radius:9px; padding:9px 10px; display:flex; flex-direction:column; gap:1px;}
+.dose-preview span.k{font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--ink-faint);}
+.dose-preview span.v{font-size:13px; font-weight:700; color:var(--ink); font-family:var(--font-display); line-height:1.3;}
+.dose-preview.is-diluyente span.v{font-size:12.5px; font-family:var(--font-body); font-weight:600; color:var(--ink-soft);}
+
+.med-card__footer{display:flex; align-items:center; justify-content:space-between; margin-top:auto;}
+.badge{font-size:9.5px; font-weight:800; padding:4px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:.04em;}
+.badge.mar{background:var(--risk4-soft); color:var(--risk4); border:1px solid var(--risk4-bd);}
+.badge.lasa{background:var(--risk3-soft); color:var(--risk3); border:1px solid var(--risk3-bd);}
+.badge.dil{background:var(--dil-soft); color:var(--dil); border:1px solid var(--dil-bd);}
+.chev{color:var(--ink-faint); width:16px; height:16px;}
+
+.empty-state{grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--ink-faint);}
+.empty-state svg{width:42px; height:42px; margin-bottom:12px; opacity:.5;}
+.empty-state p{font-size:15px; font-weight:600;}
+
+.site-footer{border-top:1px solid var(--line); padding:34px 20px 44px; margin-top:10px;}
+.site-footer__inner{max-width:640px; margin:0 auto; text-align:center;}
+.warn-pill{display:inline-flex; align-items:center; gap:7px; background:var(--risk3-soft); color:var(--risk3); border:1px solid var(--risk3-bd); padding:6px 13px; border-radius:999px; font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:14px;}
+.warn-pill svg{width:14px;height:14px;}
+.site-footer p{font-size:12.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:10px;}
+.meta-row{display:flex; justify-content:center; gap:16px; font-size:10px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--ink-faint); padding-top:14px; border-top:1px solid var(--line); margin-top:14px; flex-wrap:wrap;}
+
+#detail-view{position:fixed; inset:0; z-index:50; background:var(--paper); display:none; flex-direction:column; height:100dvh; width:100%; overflow:hidden;}
+.slide-in{animation:slideIn .28s cubic-bezier(.16,1,.3,1) forwards;}
+.slide-out{animation:slideOut .2s ease-in forwards;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:.4;} to{transform:translateX(0);opacity:1;}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1;} to{transform:translateX(100%);opacity:0;}}
+
+.detail-topbar{background:var(--surface); border-bottom:1px solid var(--line); flex:none;}
+.back-btn{width:100%; display:flex; align-items:center; gap:8px; padding:15px 20px; color:var(--teal); font-weight:800; font-size:13px; letter-spacing:.03em; background:var(--surface-2);}
+.back-btn:hover{background:var(--line);}
+.back-btn svg{width:18px;height:18px;}
+.ficha-header{padding:18px 20px 16px; max-width:760px; margin:0 auto; width:100%;}
+.ficha-eyebrow{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--teal); margin-bottom:6px;}
+.ficha-title{font-size:28px; font-weight:700; letter-spacing:-.015em; line-height:1.08;}
+.ficha-pres{font-size:16px; font-weight:700; color:var(--ink-soft); margin-top:6px;}
+
+.para-banner{margin-top:16px; display:flex; align-items:center; gap:14px; background:var(--risk4-soft); border:1.5px solid var(--risk4-bd); border-radius:var(--radius-md); padding:14px 16px;}
+.para-icon{flex:none; width:52px; height:52px; border-radius:12px; background:var(--risk4); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); overflow:hidden;}
+.para-icon img{width:100%; height:100%; object-fit:cover;}
+.para-icon svg.para-icon-fallback{width:28px; height:28px; color:#fff; display:none;}
+.para-banner h4{color:var(--risk4); font-size:14.5px; font-weight:800; letter-spacing:.02em; text-transform:uppercase;}
+.para-banner .steps{display:flex; gap:8px; margin-top:5px; flex-wrap:wrap;}
+.para-banner .steps span{font-size:10.5px; font-weight:800; color:var(--risk4); background:var(--surface); border:1px solid var(--risk4-bd); padding:2px 7px; border-radius:5px;}
+.para-banner p.sub{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin-top:6px;}
+
+.ficha-scroll{flex:1; overflow-y:auto; padding:4px 20px 40px; -webkit-overflow-scrolling:touch;}
+.ficha-scroll::-webkit-scrollbar{display:none;}
+.ficha-body{max-width:760px; margin:0 auto; width:100%;}
+
+.segmented{display:flex; background:var(--surface-2); border-radius:12px; padding:4px; margin:18px 0 16px; border:1px solid var(--line);}
+.segmented button{flex:1; padding:11px; border-radius:9px; font-size:14px; font-weight:800; color:var(--ink-faint); transition:background .15s,color .15s;}
+.segmented button.active{background:var(--surface); color:var(--teal); box-shadow:var(--shadow-sm);}
+.segmented button.active.pedia{color:#B15B00;}
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:var(--shadow-sm); overflow:hidden;}
+.panel-row{padding:16px 18px;}
+.panel-row + .panel-row{border-top:1px solid var(--line);}
+.panel-row .k{font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); margin-bottom:4px;}
+.panel-row .k.pedia{color:#B15B00;}
+.panel-row .v-lg{font-size:22px; font-weight:700; font-family:var(--font-display); line-height:1.25;}
+.panel-row .v-md{font-size:17px; font-weight:700; color:var(--teal); font-family:var(--font-display);}
+.panel-row .v-md.pedia{color:#B15B00;}
+.panel-row .v-sm{font-size:15px; font-weight:700;}
+
+.reco-box{margin-top:12px; border-radius:var(--radius-md); padding:15px 16px; border-left:4px solid var(--teal); background:#E7F3F6; box-shadow:var(--shadow-sm);}
+html.night .reco-box{background:#0E2226;}
+.reco-box.pedia{border-left-color:#C97A16; background:#FBF1E4;}
+html.night .reco-box.pedia{background:#26190A;}
+.reco-box h5{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; color:var(--teal);}
+.reco-box.pedia h5{color:#C97A16;}
+.reco-box p{font-size:14px; font-weight:500; line-height:1.55; color:var(--ink);}
+.reco-box strong{color:inherit;}
+
+.obs-box{margin-top:12px; border-radius:var(--radius-md); padding:15px 16px; border-left:4px solid var(--risk3); background:var(--risk3-soft); box-shadow:var(--shadow-sm);}
+.obs-box h5{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; color:var(--risk3); display:flex; align-items:center; gap:6px;}
+.obs-box h5 svg{width:14px; height:14px;}
+.obs-box p{font-size:14px; font-weight:500; line-height:1.5; color:var(--ink);}
+
+.algo-title{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); margin:26px 0 10px 2px;}
+.algo-list{display:flex; flex-direction:column; gap:8px;}
+.algo-chip{display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--navy); color:#fff; padding:14px 16px; border-radius:12px; font-weight:700; font-size:13.5px; box-shadow:var(--shadow-sm);}
+.algo-chip .left{display:flex; align-items:center; gap:10px;}
+.algo-chip svg{width:16px; height:16px; opacity:.8;}
+
+@media(min-width:640px){
+  .ficha-title{font-size:32px;}
+  .grid{gap:14px;}
+}
+</style>
+</head>
+<body>
+
+<div id="main-view">
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brandmark">
+        <img src="Logo-CRS.png" alt="Logo CRS" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <svg class="brandmark-fallback" viewBox="0 0 24 24" fill="none"><path d="M12 3v6M12 15v6M3 12h6M15 12h6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>CARRO DE PARO DIGITAL</h1>
+        <p>CRS Hospital Provincia Cordillera</p>
+      </div>
+      <button class="night-toggle" id="nightToggle" type="button" aria-pressed="false">
+        <span class="night-toggle__dot" id="nightDot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2 12h2.4M19.6 12H22M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
+        </span>
+        <span id="nightLabel">Modo día</span>
+      </button>
+    </div>
+    <div class="ecg-wrap topbar__ecg">
+      <svg viewBox="0 0 600 26" preserveAspectRatio="none">
+        <path class="ecg-line ecg-anim" d="M0,13 L60,13 L80,13 L92,4 L104,22 L116,13 L140,13 L400,13 L420,13 L432,4 L444,22 L456,13 L480,13 L600,13" />
+      </svg>
+    </div>
+  </header>
+
+  <div class="searchbar-zone">
+    <div class="searchbar-inner">
+      <div class="search-shell">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+        <input type="text" id="buscador" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Buscar medicamento, grupo o principio activo…">
+      </div>
+      <div class="stat-pill stat-pill-desktop"><b class="tabular" id="statCount">31</b><span>Fármacos</span></div>
+      <div class="stat-pill stat-pill-desktop"><b class="tabular">4</b><span>Filas</span></div>
+    </div>
+  </div>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h3>Ir a la fila</h3>
+      <div class="row-nav" id="rowNav"></div>
+      <h3>Alertas de seguridad</h3>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-swatch mar"></span>Alto riesgo (P.A.R.A.)</div>
+        <div class="legend-item"><span class="legend-swatch lasa"></span>LASA — sonido/aspecto similar</div>
+        <div class="legend-item"><span class="legend-swatch dil"></span>Diluyente (sin ficha de dosis)</div>
+      </div>
+    </aside>
+
+    <div>
+      <div class="chip-scroller" id="chipScroller"></div>
+      <div id="carro-container"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span class="warn-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17.3a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        Aviso de seguridad
+      </span>
+      <p>Esta herramienta corresponde a una interfaz de consulta rápida y no sustituye los protocolos institucionales ni el juicio clínico.</p>
+      <p>Información institucional sujeta a actualización y validación conforme a protocolos vigentes. Fuentes: ACLS 2020, PALS 2020, Lexicomp, Micromedex DrugDex, BNFc 2022–2023, King Guide to Parenteral Admixtures, Gahart's IV Medications 2023.</p>
+      <div class="meta-row">
+        <span>Última actualización: septiembre 2026</span>
+        <span>Versión 4.0.0</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<div id="detail-view">
+  <div class="detail-topbar">
+    <button class="back-btn" onclick="cerrarFicha()" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      VOLVER AL CARRO
+    </button>
+    <div class="ficha-header" id="ficha-header"></div>
+  </div>
+  <div class="ficha-scroll" id="ficha-content"></div>
+</div>
+
+<script>
+/* ================================================================
+   DATA — generado desde Propuesta_de_Carro_de_Paro_2_0.xlsx
+   Fuente clínica: pestaña "Tabla de Equivalencia" (ACLS 2020, PALS 2020,
+   Lexicomp, Micromedex, BNFc, King Guide, Gahart IV Medications 2023)
+   Fila/alerta de seguridad: sin cambios respecto a la versión anterior,
+   confirmado con el usuario. CLORFENAmina retirada del carro físico.
+   ================================================================ */
+const ARSENAL = [{"medicamento": "MAGNESIO Sulfato 25% AMP 2 ml", "grupo_farmacologico": "Electrolito / Antiarrítmico", "presentacion": "0,5 g/2 mL (25%/2 mL)", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "14–28 mg/kg (máx 2 g/dosis)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "20 mg/mL", "ADULTO_recomendaciones": "Emergencia (torsades, preeclampsia): 1–2 g en 5–20 min bajo monitorización; mantenimiento en 15–60 min. Monitorizar PA, frecuencia respiratoria y reflejos osteotendinosos. Antídoto: gluconato de calcio IV.", "PEDIATRIA_dosis": "25-50 mg/kg (máx 2 g/dosis)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "20 mg/mL", "PEDIATRIA_recomendaciones": "Infundir en 15–30 min; en taquicardia ventricular polimórfica puede acelerarse bajo monitorización ECG continua. Máximo 2 g/dosis en urgencias. Antídoto: gluconato de calcio IV.", "observaciones": null, "algoritmos_asociados": ["PALS (Torsades de Pointes)", "Asma Severa", "Eclampsia"]}, {"medicamento": "DEXAmetasona 4 mg / ml", "grupo_farmacologico": "Corticosteroide", "presentacion": "4 mg/mL", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP /IM", "ADULTO_dosis": "0,06–0,15 mg/kg (máx 10 mg/dosis)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,1 mg/mL", "ADULTO_recomendaciones": "Bolo IV lento en 3–5 min, sin diluir o diluido en SF/SG; también puede infundirse en 15–30 min. No requiere monitorización cardíaca en dosis habituales. Administrar lo antes posible en edema de vía aérea y anafilaxia.", "PEDIATRIA_dosis": "0,15-0,6 mg/kg (máx 10 mg)", "PEDIATRIA_dilucion": "50 mL (SF / SG)", "PEDIATRIA_velocidad": "0,1 mg/mL", "PEDIATRIA_recomendaciones": "Bolo IV lento en 3–5 min, sin diluir o diluido en SF/SG. En edema de vía aérea administrar tan pronto como sea posible. Vigilar hiperglucemia en neonatos y lactantes.", "observaciones": null, "algoritmos_asociados": ["Anafilaxia", "Crisis Asmática", "Shock refractario"]}, {"medicamento": "HIDROcortisona 100 mg FCO AMP", "grupo_farmacologico": "Corticosteroide", "presentacion": "100 mg", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "1–3 mg/kg/dosis (máx 500 mg)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "5 mg/mL", "ADULTO_recomendaciones": "En shock anafiláctico o insuficiencia suprarrenal aguda: bolo IV rápido en 3–5 min; uso electivo: infundir en 20–30 min. Puede causar hiperglucemia — monitorizar glucemia.", "PEDIATRIA_dosis": "1-2 mg/kg/dosis (máx 100 mg)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "5 mg/mL", "PEDIATRIA_recomendaciones": "Emergencia: bolo IV en 3–5 min; uso electivo: infundir en 20–30 min. Monitorizar glucemia. Reconsiderar dosis mayores a 100 mg en niños.", "observaciones": null, "algoritmos_asociados": ["Anafilaxia", "Crisis Asmática", "Shock refractario"]}, {"medicamento": "Furosemida 20 mg / ml", "grupo_farmacologico": "Diurético de asa", "presentacion": "20 mg/1 mL", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,5–1 mg/kg (máx 200 mg)", "ADULTO_dilucion": "100 mL (SF — no usar SG)", "ADULTO_velocidad": "2 mg/mL", "ADULTO_recomendaciones": "Velocidad máxima 4 mg/min — riesgo de ototoxicidad con infusión rápida. Dosis habitual en 1–2 min; en dosis altas (>80 mg) infundir en 20–30 min. Monitorizar potasio — riesgo de hipopotasemia e hipovolemia.", "PEDIATRIA_dosis": "0,5-2 mg/kg/dosis (máx 80 mg)", "PEDIATRIA_dilucion": "50 mL (SF — no usar SG)", "PEDIATRIA_velocidad": "2 mg/mL", "PEDIATRIA_recomendaciones": "Velocidad máxima 0,5 mg/kg/min (máx 4 mg/min) — riesgo de ototoxicidad. Infundir en 2–5 min. Monitorizar electrolitos y diuresis.", "observaciones": null, "algoritmos_asociados": ["Edema Agudo de Pulmón", "Crisis Hipertensiva"]}, {"medicamento": "GLUCOnato de Calcio 10% AMP 10 ml", "grupo_farmacologico": "Electrolito", "presentacion": "1 g/10 mL (10%/10 mL", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "14–43 mg/kg (máx 3 g/dosis)", "ADULTO_dilucion": "250 mL (- / SG)", "ADULTO_velocidad": "4 mg/mL", "ADULTO_recomendaciones": "En emergencia cardíaca (hiperpotasemia, sobredosis de bloqueadores de canales de calcio): 1–3 g en 3–5 min bajo monitorización ECG — riesgo de bradicardia o asistolia si se administra rápido. Nunca administrar vía IM. Confirmar vía periférica permeable: riesgo grave de necrosis tisular por extravasación.", "PEDIATRIA_dosis": "50-100 mg/kg/dosis (máx 1 g)", "PEDIATRIA_dilucion": "100 mL (- / SG)", "PEDIATRIA_velocidad": "4 mg/mL", "PEDIATRIA_recomendaciones": "Emergencia cardíaca: 50–100 mg/kg en 3–5 min bajo monitorización ECG. Uso electivo: infundir en 10–30 min. Riesgo grave de necrosis por extravasación; nunca vía IM. En neonatos, mayor riesgo de bradicardia con infusión rápida.", "observaciones": "Incompatible con bicarbonato de sodio, fosfatos y sulfatos en la misma línea — riesgo de precipitación.", "algoritmos_asociados": ["PALS (Paro/Hiperkalemia)", "Hipocalcemia severa"]}, {"medicamento": "Bicarbonato de Sodio 8,4% AMP 10 ml", "grupo_farmacologico": "Alcalinizante / Electrolito", "presentacion": "840 mg/10 mL (8.4%/10 mL)", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "1 mEq/kg (84 mg/kg; máx 50 mEq/dosis)", "ADULTO_dilucion": "200 mL (SF / SG)", "ADULTO_velocidad": "0,25 mEq/mL (21 mg/mL)", "ADULTO_recomendaciones": "En PCR: bolo IV directo. En acidosis documentada: infusión según déficit de base (habitualmente 30–60 min). Uso empírico rutinario en PCR es controvertido (ACLS 2020) — reservar para acidosis documentada, hiperpotasemia grave o intoxicación por tricíclicos.", "PEDIATRIA_dosis": "1-2 mEq/kg (84-168 mg/kg)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "0,5 mEq/mL", "PEDIATRIA_recomendaciones": "En PCR: bolo IV lento. En neonatos y menores de 2 años: infundir en ≥2 min, siempre diluido al 4,2%. En acidosis: infusión según déficit de base.", "observaciones": "Precipita con calcio y catecolaminas (adrenalina, dopamina, noradrenalina) y se inactiva con fármacos ácidos en la misma línea. Lavar la vía exhaustivamente antes y después de administrar.", "algoritmos_asociados": ["PALS (Acidosis severa/Hiperkalemia)", "Intoxicación Tricíclicos"]}, {"medicamento": "Atropina 1 mg / ml", "grupo_farmacologico": "Anticolinérgico / Antimuscarínico", "presentacion": "1 mg/ mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP/IM", "ADULTO_dosis": "0,01–0,02 mg/kg (mín 0,5 mg; máx 3 mg total)", "ADULTO_dilucion": "Sin diluir (bolo)", "ADULTO_velocidad": "Sin Diluir", "ADULTO_recomendaciones": "Bolo IV rápido. Dosis menores a 0,5 mg pueden causar bradicardia paradójica por efecto vagotónico central — no usar dosis subterapéuticas. Dosis máxima total 3 mg. En bloqueo AV de alto grado puede no ser efectiva; preferir marcapasos externo.", "PEDIATRIA_dosis": "0,02 mg/kg (mín 0,1 mg; máx 1 mg)", "PEDIATRIA_dilucion": "Sin diluir (bolo)", "PEDIATRIA_velocidad": "Sin Diluir", "PEDIATRIA_recomendaciones": "Bolo IV rápido. Dosis mínima 0,1 mg (PALS 2020) para evitar bradicardia paradójica. No superar 0,5 mg/dosis en niños ni 1 mg en adolescentes.", "observaciones": null, "algoritmos_asociados": ["PALS (Bradicardia Sintomática)", "Intoxicación Organofosforados"]}, {"medicamento": "ADENOsina 6 mg / ml", "grupo_farmacologico": "Antiarrítmico", "presentacion": "6 mg/mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "1ª dosis: 6 mg (0,1 mg/kg); 2ª dosis: 12 mg (0,2 mg/kg)", "ADULTO_dilucion": "Sin diluir (bolo)", "ADULTO_velocidad": "Sin Diluir", "ADULTO_recomendaciones": "Bolo IV ultrarrápido (menos de 2 seg) por vena periférica proximal, seguido INMEDIATAMENTE de flush rápido con 20 mL SF y elevación de la extremidad. Vida media menor a 10 seg. Puede causar bloqueo AV transitorio, broncoespasmo y síncope — advertir al paciente. Contraindicada en asma severo, WPW con FA y bloqueo AV de 2°–3°.", "PEDIATRIA_dosis": "1ª dosis: 0,1 mg/kg (máx 6 mg); 2ª dosis: 0,2 mg/kg (máx 12 mg)", "PEDIATRIA_dilucion": "Sin diluir (bolo)", "PEDIATRIA_velocidad": "Sin Diluir", "PEDIATRIA_recomendaciones": "Bolo IV/IO ultrarrápido (menos de 2 seg), seguido inmediatamente de flush rápido con 5–10 mL SF. Usar vena proximal o vía central. Monitorizar ECG continuo durante la administración.", "observaciones": null, "algoritmos_asociados": ["PALS (Taquicardia con pulso - TSV)"]}, {"medicamento": "AMIOdarona 150 mg/ 3 ml", "grupo_farmacologico": "Antiarrítmico", "presentacion": "150 mg/3 mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "CVC", "ADULTO_dosis": "~5 mg/kg (máx 300 mg bolo PCR; 150 mg bolo SVT)", "ADULTO_dilucion": "250 mL (SG — no usar SF)", "ADULTO_velocidad": "6 mg/mL", "ADULTO_recomendaciones": "En PCR (FV/TV sin pulso): bolo IV rápido. En arritmia estable: 150 mg en 10 min. Mantenimiento: 1 mg/min por 6 h, luego 0,5 mg/min por 18 h. Monitorizar QT, PA y frecuencia cardíaca — riesgo de hipotensión. Usar vía central en infusiones prolongadas. Proteger de la luz si la infusión dura más de 2 h.", "PEDIATRIA_dosis": "5 mg/kg (máx 300 mg/dosis)", "PEDIATRIA_dilucion": "100 mL (SG — no usar SF)", "PEDIATRIA_velocidad": "6 mg/mL", "PEDIATRIA_recomendaciones": "En PCR: bolo IV/IO rápido. En arritmia con pulso: 5 mg/kg en 20–60 min. Preferir vía central. Monitorizar ECG (riesgo de QT prolongado), PA y frecuencia cardíaca.", "observaciones": "Incompatible con suero fisiológico — precipita; diluir siempre en suero glucosado al 5%. Incompatible también con heparina y bicarbonato de sodio en la misma línea.", "algoritmos_asociados": ["PALS (FV/TV sin pulso)", "Taquicardia con pulso"]}, {"medicamento": "VERApamilo 5 mg / 2 ml", "grupo_farmacologico": "Antiarrítmico / Antihipertensivo", "presentacion": "5 mg/2 mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,075–0,15 mg/kg (máx 10 mg/dosis)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,05 mg/mL", "ADULTO_recomendaciones": "Bolo IV en 2–3 min (en adultos mayores: 3 min o más). Monitorizar ECG y presión arterial — riesgo de hipotensión severa, bradicardia y bloqueo AV. Contraindicado en disfunción sistólica severa, preexcitación (WPW) y uso concomitante con betabloqueantes IV. Tener atropina y gluconato de calcio disponibles como antídotos.", "PEDIATRIA_dosis": "0,1-0,3 mg/kg (máx 5 mg)", "PEDIATRIA_dilucion": "50 mL (SF / SG)", "PEDIATRIA_velocidad": "0,05 mg/mL", "PEDIATRIA_recomendaciones": "CONTRAINDICADO en menores de 1 año — riesgo de colapso cardiovascular irreversible. En mayores de 1 año: bolo IV en 2–3 min bajo monitorización ECG y PA.", "observaciones": null, "algoritmos_asociados": ["Taquicardia con pulso", "Crisis Hipertensiva"]}, {"medicamento": "LABETalol 100 mg / 20 ml", "grupo_farmacologico": "Antiarrítmico / Antihipertensivo", "presentacion": "100 mg/20 mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,25–0,5 mg/kg (bolo; máx 300 mg acumulado)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "1 mg/mL", "ADULTO_recomendaciones": "Bolo de 20–80 mg en 2 min, puede repetirse cada 10 min (máx 300 mg acumulado); infusión continua alternativa: 0,5–2 mg/min. Mantener al paciente en decúbito — riesgo de hipotensión ortostática severa. Contraindicado en asma, EPOC, bloqueo AV 2°–3° y bradicardia.", "PEDIATRIA_dosis": "0,2-1 mg/kg (máx 20 mg/dosis)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "1 mg/mL", "PEDIATRIA_recomendaciones": "0,2–1 mg/kg en 2–3 min; infusión continua: 0,25–3 mg/kg/h. Paciente en decúbito; monitorizar PA y frecuencia cardíaca. Contraindicado en asma, bloqueo AV y bradicardia sintomática.", "observaciones": null, "algoritmos_asociados": ["Taquicardia con pulso", "Crisis Hipertensiva"]}, {"medicamento": "Propanolol 1 mg / ml", "grupo_farmacologico": "Antiarrítmico / Antihipertensivo", "presentacion": "1 mg/ mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,1 mg/kg IV lento (máx 1 mg/min)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,01 mg/mL", "ADULTO_recomendaciones": "1 mg IV en 1 min, repetir cada 2–3 min si es necesario (máx 0,1 mg/kg o 5 mg total) bajo monitorización ECG continua. Contraindicado en asma/EPOC, bloqueo AV 2°–3° e ICC no controlada. Antídotos si hay bradicardia/hipotensión: glucagón IV y atropina.", "PEDIATRIA_dosis": "0,01-0,1 mg/kg (máx 1 mg/dosis)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "0,01 mg/mL", "PEDIATRIA_recomendaciones": "0,01–0,1 mg/kg en 10 min bajo monitorización ECG continua. Contraindicado en asma y bloqueo AV. Tener atropina disponible. Extrema precaución en lactantes y neonatos.", "observaciones": null, "algoritmos_asociados": ["Taquicardia con pulso", "Crisis Hipertensiva"]}, {"medicamento": "NITROglicerina 50 mg / 10 ml", "grupo_farmacologico": "Vasodilatador", "presentacion": "50 mg/10 mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,1–3 µg/kg/min (infusión continua; titular)", "ADULTO_dilucion": "250 mL (SF / SG)", "ADULTO_velocidad": "0,4 mg/mL", "ADULTO_recomendaciones": "Infusión continua titulada: iniciar en 5–10 µg/min, aumentar 5–10 µg/min cada 3–5 min según respuesta. OBLIGATORIO usar equipo libre de PVC o de vidrio — el plástico estándar absorbe hasta 40–80% del fármaco. Requiere bomba de infusión y monitorización continua de PA. Proteger de la luz.", "PEDIATRIA_dosis": "0,5-10 µg/kg/min (infusión continua)", "PEDIATRIA_dilucion": "250 mL (SF / SG)", "PEDIATRIA_velocidad": "0,4 mg/mL", "PEDIATRIA_recomendaciones": "Infusión continua titulada: 0,5–10 µg/kg/min, ajustando según respuesta hemodinámica. Usar equipo libre de PVC. Requiere bomba de infusión para dosificación precisa.", "observaciones": null, "algoritmos_asociados": ["SCA (Síndrome Coronario)", "Edema Agudo de Pulmón"]}, {"medicamento": "GLUCOsa 30% AMP 20 ml", "grupo_farmacologico": "Solución Glucosada", "presentacion": "6 g/ 20 mL (30%/20 mL)", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "CVC (Ped: VVP)", "ADULTO_dosis": "0,5–1 g/kg (máx 50 g/dosis; CVC)", "ADULTO_dilucion": "Sin diluir (bolo)", "ADULTO_velocidad": "Sin Diluir", "ADULTO_recomendaciones": "Por vía central: bolo IV directo para hipoglucemia severa. Por vía periférica, diluir a ≤12,5% e infundir en 5–15 min — concentraciones mayores por vía periférica causan flebitis severa. Confirmar glucemia antes de administrar.", "PEDIATRIA_dosis": "0,5-1 g/kg (200-500 mg/kg)", "PEDIATRIA_dilucion": "100 mL (- / SG)", "PEDIATRIA_velocidad": "12,5% (periférica)", "PEDIATRIA_recomendaciones": "200–500 mg/kg de solución al 10% en 5–10 min. Diluir a ≤12,5% para vía periférica; concentraciones mayores requieren vía central. En neonatos, usar dextrosa al 10% como estándar.", "observaciones": null, "algoritmos_asociados": ["Hipoglicemia Severa"]}, {"medicamento": "Lanatosido C 0,4 mg / 2 ml", "grupo_farmacologico": "Glucósido Cardíaco", "presentacion": "0,4 mg/ 2 mL", "ubicacion_carro": "FILA 2 (Intermedia)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,01–0,02 mg/kg (impregnación; máx 1,6 mg total)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,004 mg/mL", "ADULTO_recomendaciones": "Infundir en 10–20 min diluido en 100 mL SF/SG. Monitorizar ECG continuamente — riesgo de bloqueo AV, extrasístoles y arritmias. Suspender si bradicardia menor a 50 lpm o arritmias nuevas. Ventana terapéutica estrecha; revisar niveles de potasio.", "PEDIATRIA_dosis": "0,025 mg/kg/dosis (impregnación)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "0,004 mg/mL", "PEDIATRIA_recomendaciones": "Uso pediátrico muy limitado — se prefiere digoxina, con farmacocinética pediátrica mejor establecida. Si se usa, infundir en 10–20 min y monitorizar ECG y potasio estrechamente. Revisar protocolo pediátrico institucional antes de administrar.", "observaciones": null, "algoritmos_asociados": ["Taquicardia con pulso (FA)"]}, {"medicamento": "DOPAmina 200 mg / 5 ml", "grupo_farmacologico": "Vasopresor / Simpaticomimético", "presentacion": "200 mg/5 mL", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "5–20 µg/kg/min (infusión continua; tope máx 20 µg/kg/min)", "ADULTO_dilucion": "250 mL (SF / SG)", "ADULTO_velocidad": "3,2 mg/mL", "ADULTO_recomendaciones": "Infusión continua exclusivamente, 5–20 µg/kg/min según respuesta — NUNCA en bolo. Tope máximo 20 µg/kg/min. Preferir vía central: riesgo de necrosis grave por extravasación en vía periférica. Monitorizar ECG y PA continuamente.", "PEDIATRIA_dosis": "5-20 µg/kg/min (infusión continua)", "PEDIATRIA_dilucion": "250 mL (SF / SG)", "PEDIATRIA_velocidad": "1,6 mg/mL", "PEDIATRIA_recomendaciones": "Infusión continua exclusivamente, 5–20 µg/kg/min — NUNCA en bolo. Mismo riesgo de necrosis por extravasación; preferir vía central. Monitorizar ECG y PA.", "observaciones": "Se inactiva en contacto con bicarbonato de sodio y otras soluciones alcalinas en la misma línea.", "algoritmos_asociados": ["PALS (Shock/Paro)", "Anafilaxia (Adrenalina)"]}, {"medicamento": "EPINEfrina 1 mg /ml", "grupo_farmacologico": "Vasopresor / Simpaticomimético", "presentacion": "1 mg/mL", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Alto Riesgo (MAR)", "etiqueta_PARA": true, "via_administracion": "VVP", "ADULTO_dosis": "PCR: 0,01 mg/kg (1 mg fija); Infusión: 0,1–1 µg/kg/min", "ADULTO_dilucion": "250 mL (SF / SG)", "ADULTO_velocidad": "16 ug/mL", "ADULTO_recomendaciones": "En PCR: bolo IV/IO directo seguido de flush con 20 mL SF, cada 3–5 min. En infusión vasopresora post-RCE: 0,1–0,5 µg/kg/min continua, preferir vía central por riesgo de necrosis por extravasación. Monitorizar ECG y PA.", "PEDIATRIA_dosis": "RCP: 0,01 mg/kg; Infusión: 0,1-1 µg/kg/min", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "16 µg/mL", "PEDIATRIA_recomendaciones": "En PCR: 0,01 mg/kg IV/IO en bolo (máx 1 mg), repetir cada 3–5 min (PALS 2020), con flush inmediato de SF. En infusión continua, preferir vía central.", "observaciones": "Se inactiva al contacto con bicarbonato de sodio y otras soluciones alcalinas en la misma línea.", "algoritmos_asociados": ["PALS (Shock/Paro)", "Anafilaxia (Adrenalina)"]}, {"medicamento": "DOBUTAmina 250 mg / 5 ml", "grupo_farmacologico": "Vasopresor / Simpaticomimético", "presentacion": "250 mg/5 mL", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "2,5–20 µg/kg/min (infusión continua)", "ADULTO_dilucion": "500 mL (SF / SG)", "ADULTO_velocidad": "3 mg/mL", "ADULTO_recomendaciones": "Infusión continua exclusivamente, 2,5–20 µg/kg/min, iniciando a dosis bajas y titulando — NUNCA en bolo. Puede causar hipotensión a dosis bajas y taquiarritmias a dosis altas. Monitorizar ECG, PA y gasto cardíaco.", "PEDIATRIA_dosis": "5-20 µg/kg/min (infusión continua)", "PEDIATRIA_dilucion": "250 mL (SF / SG)", "PEDIATRIA_velocidad": "2 mg/mL", "PEDIATRIA_recomendaciones": "Infusión continua exclusivamente, 5–20 µg/kg/min — NUNCA en bolo. Titulación cuidadosa en neonatos y lactantes por mayor sensibilidad. Monitorizar ECG, PA y signos de perfusión.", "observaciones": "Incompatible con bicarbonato de sodio, heparina y algunas cefalosporinas en la misma línea.", "algoritmos_asociados": ["PALS (Shock/Paro)", "Anafilaxia (Adrenalina)"]}, {"medicamento": "EFEDrina 6 % 1 ml", "grupo_farmacologico": "Vasopresor / Simpaticomimético", "presentacion": "0,06 g/ 1 mL (6%/1 mL)", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP /IM", "ADULTO_dosis": "0,1–0,3 mg/kg/dosis (máx 25 mg/dosis)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,6 mg/mL", "ADULTO_recomendaciones": "Bolo IV lento en 1–2 min, o diluido en SF; alternativamente infusión continua titulada. Monitorizar PA y frecuencia cardíaca. Con uso repetido puede desarrollarse taquifilaxia (reducción del efecto). Evitar en hipertensión no controlada.", "PEDIATRIA_dosis": "0,2-0,3 mg/kg/dosis (máx 25 mg)", "PEDIATRIA_dilucion": "50 mL (SF / SG)", "PEDIATRIA_velocidad": "0,6 mg/mL", "PEDIATRIA_recomendaciones": "Bolo IV lento en 1–2 min, diluido antes de administrar. Datos de seguridad pediátrica limitados — verificar protocolo institucional. Riesgo de hipertensión severa con dosis repetidas.", "observaciones": null, "algoritmos_asociados": ["PALS (Shock/Paro)", "Anafilaxia (Adrenalina)"]}, {"medicamento": "FENILEfrina 1% AMP 1 ml", "grupo_farmacologico": "Vasopresor / Simpaticomimético", "presentacion": "10 mg/mL", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "CVC", "ADULTO_dosis": "50–200 µg/dosis (bolo); infusión: 0,5–5 µg/kg/min", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0.4 mg/mL", "ADULTO_recomendaciones": "Bolo de 50–200 µg en 20–30 seg; infusión continua alternativa: 100–300 µg/min ajustando según PA. Preferir vía central — riesgo de necrosis por extravasación e isquemia tisular periférica. Monitorizar PA y ECG (riesgo de bradicardia refleja).", "PEDIATRIA_dosis": "5-20 µg/kg/dosis (bolo)", "PEDIATRIA_dilucion": "50 mL (SF / SG)", "PEDIATRIA_velocidad": "0,2 mg/mL", "PEDIATRIA_recomendaciones": "Bolo de 5–20 µg/kg en 20–30 seg. Precaución en menores de 1 año. Preferir vía central en infusión continua. Datos pediátricos limitados.", "observaciones": null, "algoritmos_asociados": ["PALS (Shock/Paro)", "Anafilaxia (Adrenalina)"]}, {"medicamento": "NORepinefrina 4 mg / 4 ml", "grupo_farmacologico": "Vasopresor / Simpaticomimético", "presentacion": "4 mg/ 4mL", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,01–3 µg/kg/min (infusión continua)", "ADULTO_dilucion": "250 mL (SG — no usar SF)", "ADULTO_velocidad": "64 ug/mL", "ADULTO_recomendaciones": "Infusión continua exclusivamente, 0,01–3 µg/kg/min — NUNCA en bolo. SOLO por vía central: riesgo GRAVE de necrosis tisular por extravasación en vía periférica. Diluir en suero glucosado al 5%. Monitorizar PA invasiva si está disponible.", "PEDIATRIA_dosis": "0,05-2 µg/kg/min (infusión continua)", "PEDIATRIA_dilucion": "250 mL (SG — no usar SF)", "PEDIATRIA_velocidad": "32 µg/mL", "PEDIATRIA_recomendaciones": "Infusión continua exclusivamente, 0,05–2 µg/kg/min — NUNCA en bolo. Mismo riesgo grave de necrosis por extravasación; solo vía central. Iniciar a dosis bajas y titular.", "observaciones": "Se inactiva con bicarbonato de sodio en la misma línea — diluir siempre en suero glucosado al 5%.", "algoritmos_asociados": ["PALS (Shock/Paro)", "Anafilaxia (Adrenalina)"]}, {"medicamento": "Lidocaína 2% AMP 5 ml", "grupo_farmacologico": "Antiarrítmico / Anestésico local", "presentacion": "0,1 g/ 5 mL (2%/ 5 mL)", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "1–1,5 mg/kg (bolo; máx 3 mg/kg); infusión: 20–50 µg/kg/min", "ADULTO_dilucion": "250 mL (SF / SG)", "ADULTO_velocidad": "4 mg/mL", "ADULTO_recomendaciones": "Bolo de 1–1,5 mg/kg en 1–2 min (máximo 3 mg/kg total en bolo); mantenimiento: 1–4 mg/min en infusión continua. Monitorizar ECG — riesgo de bradiarritmias y ensanchamiento del QRS con sobredosis. Síntomas de toxicidad en SNC: mareo, tinnitus, convulsiones. Reducir dosis en insuficiencia hepática.", "PEDIATRIA_dosis": "1 mg/kg (bolo); infusión: 20-50 µg/kg/min", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "4 mg/mL", "PEDIATRIA_recomendaciones": "Bolo de 1 mg/kg en 1–2 min (dosis total máxima 3 mg/kg); mantenimiento: 20–50 µg/kg/min. Monitorizar ECG y nivel de conciencia.", "observaciones": null, "algoritmos_asociados": ["PALS (FV/TV sin pulso)", "Taquicardia con pulso"]}, {"medicamento": "Naloxona 0,4 mg / ml", "grupo_farmacologico": "Antídoto (Antagonista Opioide)", "presentacion": "0,4 mg/ 1 mL", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP/IM/SC", "ADULTO_dosis": "0,01–0,03 mg/kg (máx 2 mg/dosis; repetir c/2–3 min)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,004 mg/mL", "ADULTO_recomendaciones": "Bolo IV (también IM o SC si no hay acceso venoso); puede repetirse cada 2–3 min según efecto. Vida media corta (30–80 min) — vigilar re-narcotización y considerar infusión continua. Puede precipitar síndrome de abstinencia agudo en dependientes a opioides; titular con cuidado.", "PEDIATRIA_dosis": "0,01 mg/kg (<20 kg); 0,4 mg si >20 kg", "PEDIATRIA_dilucion": "50 mL (SF / SG)", "PEDIATRIA_velocidad": "0,004 mg/mL", "PEDIATRIA_recomendaciones": "Bolo IV, IO o IM si no hay acceso venoso; puede repetirse cada 2–3 min. Vigilar re-narcotización por vida media corta. En neonatos de madres dependientes de opioides, usar con extrema precaución.", "observaciones": null, "algoritmos_asociados": ["Intoxicación / Sobredosis Opioides"]}, {"medicamento": "Flumazenil 0,5 mg / 5 ml", "grupo_farmacologico": "Antídoto (Antagonista Benzodiacepinas)", "presentacion": "0,5 mg/ 5 mL", "ubicacion_carro": "FILA 3 (Riesgo Elevado - LASA)", "alerta_seguridad": "LASA", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "0,01 mg/kg/dosis (máx 0,2 mg/dosis; total máx 1 mg)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "0,005 mg/mL", "ADULTO_recomendaciones": "0,2 mg en 15 seg; repetir cada 1 min hasta efecto o máximo 1 mg total. Vida media corta (menos de 1 h) — vigilar re-sedación. Puede precipitar convulsiones en pacientes con epilepsia tratada con benzodiacepinas o dependencia crónica; no usar en ese contexto.", "PEDIATRIA_dosis": "0,01 mg/kg (máx 0,2 mg/dosis)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "0,005 mg/mL", "PEDIATRIA_recomendaciones": "0,01 mg/kg en 15 seg; repetir cada 1 min hasta máximo 0,2 mg/dosis (3 dosis máximo). Vigilar re-sedación. Experiencia pediátrica limitada — verificar protocolo institucional.", "observaciones": null, "algoritmos_asociados": ["Intoxicación / Sobredosis Benzodiacepinas"]}, {"medicamento": "POTASIO Cloruro 10% AMP 10 ml", "grupo_farmacologico": "Electrolito Concentrado", "presentacion": "1 g/10 mL (10%/10mL))", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Alto Riesgo (MAR)", "etiqueta_PARA": true, "via_administracion": "VVP", "ADULTO_dosis": "0,5–1 mEq/kg (máx 40 mEq/dosis)", "ADULTO_dilucion": "250 mL (SF / API)", "ADULTO_velocidad": "60 mEq/L (4.5 g/L)", "ADULTO_recomendaciones": "NUNCA en bolo IV — riesgo de paro cardíaco inmediato. Vía periférica: máximo 10 mEq/h en solución ≤40 mEq/L. Vía central en emergencia: máximo 40 mEq/h en solución ≤60 mEq/L. Monitorizar ECG y potasemia durante toda la infusión.", "PEDIATRIA_dosis": "0,5-1 mEq/kg (máx 40 mEq/dosis)", "PEDIATRIA_dilucion": "100 mL (SF / API)", "PEDIATRIA_velocidad": "40 mEq/L (periférica)", "PEDIATRIA_recomendaciones": "NUNCA en bolo IV. Vía periférica: máximo 0,5 mEq/kg/h en solución ≤40 mEq/L. Vía central en emergencia: máximo 1 mEq/kg/h. Monitorizar ECG y electrolitos.", "observaciones": "No mezclar con bicarbonato de sodio en la misma línea.", "algoritmos_asociados": ["Hipokalemia Severa"]}, {"medicamento": "FENTAnilo 0,1 mg / 2 ml", "grupo_farmacologico": "Analgésico Opioide", "presentacion": "100 uc/2 mL", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Alto Riesgo (MAR)", "etiqueta_PARA": true, "via_administracion": "VVP", "ADULTO_dosis": "1–2 µg/kg (bolo; máx 100 µg/dosis)", "ADULTO_dilucion": "100 mL (SF / -)", "ADULTO_velocidad": "10 ug/mL", "ADULTO_recomendaciones": "Bolo IV lento en 1–2 min — la administración rápida puede causar rigidez torácica y apnea. Tener naloxona disponible. Infusión continua alternativa para analgesia mantenida: 25–100 µg/h.", "PEDIATRIA_dosis": "1-2 µg/kg (bolo)", "PEDIATRIA_dilucion": "50 mL (SF / -)", "PEDIATRIA_velocidad": "5 µg/mL", "PEDIATRIA_recomendaciones": "Bolo IV lento en 1–2 min. Riesgo de rigidez torácica, apnea y laringoespasmo, especialmente en neonatos y lactantes. Tener naloxona y equipo de vía aérea disponibles.", "observaciones": null, "algoritmos_asociados": ["Manejo Vía Aérea", "Secuencia de Intubación Rápida"]}, {"medicamento": "DIAZEpam 10 mg / 2 ml", "grupo_farmacologico": "Benzodiacepina / Anticonvulsivante", "presentacion": "10 mg/ 2 mL", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Alto Riesgo (MAR)", "etiqueta_PARA": true, "via_administracion": "VVP", "ADULTO_dosis": "0,1–0,2 mg/kg (máx 10 mg/dosis; tasa máx 5 mg/min)", "ADULTO_dilucion": "Sin diluir (bolo)", "ADULTO_velocidad": "Sin Diluir", "ADULTO_recomendaciones": "Bolo IV lento, máximo 5 mg/min sin diluir (en adultos mayores: máximo 2,5 mg/min). Riesgo de tromboflebitis — usar vena de calibre adecuado. Riesgo de depresión respiratoria severa; monitorizar frecuencia respiratoria y saturación.", "PEDIATRIA_dosis": "0,2-0,5 mg/kg (máx 10 mg)", "PEDIATRIA_dilucion": "Sin diluir (bolo)", "PEDIATRIA_velocidad": "Sin Diluir", "PEDIATRIA_recomendaciones": "Bolo IV lento, máximo 2 mg/min en niños y máximo 1 mg/min en neonatos, sin diluir. Monitorizar frecuencia respiratoria y saturación. Tener equipo de vía aérea disponible.", "observaciones": "NUNCA diluir — precipita al contacto con prácticamente cualquier solución acuosa. Incompatible con casi todos los fármacos en la misma línea; administrar solo, directo en la vía.", "algoritmos_asociados": ["Convulsiones / Estatus Epiléptico", "Manejo Vía Aérea"]}, {"medicamento": "MIDAzolam 15 mg / 3 ml", "grupo_farmacologico": "Benzodiacepina / Anticonvulsivante", "presentacion": "15 mg/3 mL", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Alto Riesgo (MAR)", "etiqueta_PARA": true, "via_administracion": "VVP", "ADULTO_dosis": "0,02–0,05 mg/kg (máx 5 mg/dosis)", "ADULTO_dilucion": "100 mL (SG / SF)", "ADULTO_velocidad": "5 mg/mL", "ADULTO_recomendaciones": "Sedación: 1–2,5 mg en 2 min, titulando cada 2 min según respuesta; en status epiléptico: 0,1–0,2 mg/kg IV. Riesgo de apnea e hipotensión, mayor en adultos mayores, EPOC y dosis altas. Tener equipo de vía aérea disponible. Antídoto: flumazenil.", "PEDIATRIA_dosis": "0,05-0,1 mg/kg (máx 5 mg)", "PEDIATRIA_dilucion": "100 mL (SG / SF)", "PEDIATRIA_velocidad": "1 mg/mL", "PEDIATRIA_recomendaciones": "Sedación: 0,05–0,1 mg/kg en 2–3 min; en status epiléptico: 0,1–0,2 mg/kg IV/IO (PALS 2020). Riesgo de apnea, especialmente en neonatos y lactantes. Tener equipo de vía aérea y flumazenil disponibles.", "observaciones": null, "algoritmos_asociados": ["Convulsiones / Estatus Epiléptico", "Manejo Vía Aérea"]}, {"medicamento": "SODIO Cloruro 10% AMP 10 ml", "grupo_farmacologico": "Electrolito Concentrado", "presentacion": "1 g/ 10 mL (10%/ 10 mL)", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "CVC", "ADULTO_dosis": "1–3 mEq/kg (hiponatremia grave; corrección gradual)", "ADULTO_dilucion": "100 mL (SF / SG)", "ADULTO_velocidad": "100 mg/mL", "ADULTO_recomendaciones": "NUNCA en bolo. SOLO vía central en adultos. Diluir siempre a una concentración ≤3% antes de administrar. Corrección máxima 6–12 mEq/L/día — corregir más rápido conlleva riesgo de mielinólisis osmótica pontina. Monitorizar sodio sérico cada 2–4 h.", "PEDIATRIA_dosis": "1-3 mEq/kg (hiponatremia grave)", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "50 mg/mL", "PEDIATRIA_recomendaciones": "NUNCA en bolo. SOLO vía central en pediatría. Diluir a ≤3% antes de administrar. En hiponatremia con convulsiones: 1–2 mEq/kg para elevar el sodio en aprox. 5 mEq/L. Corrección total máxima 6–8 mEq/L/día. Monitorizar sodio cada 2 h.", "observaciones": null, "algoritmos_asociados": ["Hiponatremia Severa", "Hipertensión Intracraneal"]}, {"medicamento": "Heparina 25.000 UI FCO AMP 5 ml", "grupo_farmacologico": "Anticoagulante", "presentacion": "25000 UI/5 mL", "ubicacion_carro": "FILA 4 (Fondo - Máximo Riesgo / Críticos)", "alerta_seguridad": "Alto Riesgo (MAR)", "etiqueta_PARA": true, "via_administracion": "VVP", "ADULTO_dosis": "70–80 UI/kg (bolo; máx 5000 UI); mantenimiento: 18 UI/kg/h", "ADULTO_dilucion": "250 mL (SF / SG)", "ADULTO_velocidad": "100 UI/mL", "ADULTO_recomendaciones": "Bolo de carga IV en 10–15 min; mantenimiento en infusión continua con bomba. Monitorizar APTT a las 6 h (objetivo 60–100 seg). Antídoto: protamina (1 mg neutraliza aprox. 100 UI de heparina). Vigilar trombocitopenia inducida por heparina desde el día 4.", "PEDIATRIA_dosis": "75 UI/kg (bolo); mantenimiento: 20-28 UI/kg/h", "PEDIATRIA_dilucion": "250 mL (SF / SG)", "PEDIATRIA_velocidad": "100 UI/mL", "PEDIATRIA_recomendaciones": "Bolo de carga IV en 10 min; mantenimiento en infusión continua. Monitorizar APTT a las 4–6 h (objetivo 60–85 seg). En neonatos, mayor requerimiento por menor antitrombina III — verificar protocolo neonatal.", "observaciones": "No coadministrar en la misma línea con amiodarona, eritromicina ni aminoglucósidos.", "algoritmos_asociados": ["SCA", "TEP / TVP"]}, {"medicamento": "amiNOFILina 250 mg/10 mL AMP", "grupo_farmacologico": "Broncodilatador", "presentacion": "250 mg/10 mL (25 mg/mL)", "ubicacion_carro": "FILA 1 (Accesibilidad - Menor Riesgo)", "alerta_seguridad": "Ninguna", "etiqueta_PARA": false, "via_administracion": "VVP", "ADULTO_dosis": "5–6 mg/kg (carga en 20–30 min; máx 500 mg); mantenimiento: 0,5–0,9 mg/kg/h", "ADULTO_dilucion": "250 mL (SF / SG)", "ADULTO_velocidad": "1 mg/mL (VVP)", "ADULTO_recomendaciones": "Carga de 5–6 mg/kg en 20–30 min — NUNCA en bolo rápido (riesgo de arritmias ventriculares, convulsiones y muerte). Mantenimiento: 0,5–0,9 mg/kg/h en infusión continua. Ventana terapéutica estrecha; monitorizar frecuencia cardíaca y presión arterial. Si el paciente ya recibe teofilina oral, reducir la dosis de carga.", "PEDIATRIA_dosis": "5–6 mg/kg (carga en 20–30 min; máx 500 mg); mantenimiento: 0,5–1 mg/kg/h", "PEDIATRIA_dilucion": "100 mL (SF / SG)", "PEDIATRIA_velocidad": "1 mg/mL", "PEDIATRIA_recomendaciones": "Carga de 5–6 mg/kg en 20–30 min — NUNCA en bolo rápido. NO es primera línea en crisis asmática pediátrica (PALS 2020). Ventana terapéutica estrecha; monitorizar signos de toxicidad (náuseas, taquicardia, convulsiones).", "observaciones": null, "algoritmos_asociados": ["Crisis Asmática Severa"]}];
+
+const DILUYENTES = [
+  {"medicamento":"AGUA BIDESTILADA 20 mL AMP","presentacion":"20 mL AMP","ubicacion_carro":"FILA 1 (Accesibilidad - Menor Riesgo)","tipo":"diluyente"},
+  {"medicamento":"Suero Fisiológico 20 ml AMP","presentacion":"20 mL AMP","ubicacion_carro":"FILA 1 (Accesibilidad - Menor Riesgo)","tipo":"diluyente"}
+];
+
+const ESTRUCTURAS = [
+  { id:"FILA 4", nombre:"FILA 4", subtitulo:"Fondo · Máximo riesgo / críticos", varKey:"--risk4" },
+  { id:"FILA 3", nombre:"FILA 3", subtitulo:"Riesgo elevado · LASA", varKey:"--risk3" },
+  { id:"FILA 2", nombre:"FILA 2", subtitulo:"Intermedia", varKey:"--risk2" },
+  { id:"FILA 1", nombre:"FILA 1", subtitulo:"Accesibilidad · Menor riesgo", varKey:"--risk1" }
+];
+
+const TODOS = [...ARSENAL, ...DILUYENTES];
+
+const container = document.getElementById('carro-container');
+const buscador = document.getElementById('buscador');
+const rowNav = document.getElementById('rowNav');
+const chipScroller = document.getElementById('chipScroller');
+document.getElementById('statCount').textContent = ARSENAL.length;
+
+let activeRow = 'ALL';
+
+function buildRowNav(){
+  rowNav.innerHTML = '';
+  chipScroller.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.textContent = 'Todas las filas';
+  allBtn.className = 'active';
+  allBtn.onclick = () => setActiveRow('ALL');
+  rowNav.appendChild(allBtn);
+
+  const allChip = document.createElement('button');
+  allChip.className = 'chip active';
+  allChip.textContent = 'Todas';
+  allChip.onclick = () => setActiveRow('ALL');
+  chipScroller.appendChild(allChip);
+
+  ESTRUCTURAS.forEach(fila => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="row-dot" style="background:var(${fila.varKey})"></span>${fila.nombre}`;
+    b.onclick = () => setActiveRow(fila.id);
+    rowNav.appendChild(b);
+
+    const c = document.createElement('button');
+    c.className = 'chip';
+    c.textContent = fila.nombre.replace('FILA ', 'F');
+    c.onclick = () => setActiveRow(fila.id);
+    chipScroller.appendChild(c);
+  });
+}
+
+function setActiveRow(rowId){
+  activeRow = rowId;
+  [...rowNav.children].forEach((el,i) => el.classList.toggle('active', (i===0 && rowId==='ALL') || (i>0 && ESTRUCTURAS[i-1] && ESTRUCTURAS[i-1].id===rowId)));
+  [...chipScroller.children].forEach((el,i) => el.classList.toggle('active', (i===0 && rowId==='ALL') || (i>0 && ESTRUCTURAS[i-1] && ESTRUCTURAS[i-1].id===rowId)));
+  applyFilters();
+}
+
+function renderCarro(datos){
+  container.innerHTML = '';
+
+  if (datos.length === 0){
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <p>No se encontraron medicamentos.</p>
+    </div>`;
+    return;
+  }
+
+  ESTRUCTURAS.forEach(fila => {
+    if (activeRow !== 'ALL' && activeRow !== fila.id) return;
+    const itemsFila = datos.filter(m => m.ubicacion_carro.includes(fila.id));
+    if (itemsFila.length === 0) return;
+
+    const section = document.createElement('section');
+    section.className = 'fila-section';
+    section.id = 'sec-' + fila.id.replace(' ', '');
+
+    const head = document.createElement('div');
+    head.className = 'fila-head';
+    head.innerHTML = `
+      <div class="bar" style="background:var(${fila.varKey})"></div>
+      <div>
+        <h2>${fila.nombre}</h2>
+        <p>${fila.subtitulo}</p>
+      </div>`;
+    section.appendChild(head);
+
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'grid';
+
+    itemsFila.forEach(item => {
+      if (item.tipo === 'diluyente'){
+        gridDiv.appendChild(renderDiluyenteCard(item));
+        return;
+      }
+      const idx = ARSENAL.indexOf(item);
+      gridDiv.appendChild(renderMedCard(item, idx, fila));
+    });
+
+    section.appendChild(gridDiv);
+    container.appendChild(section);
+  });
+}
+
+function renderMedCard(med, idx, fila){
+  const isMar = med.etiqueta_PARA;
+  const isLasa = med.alerta_seguridad.includes('LASA');
+
+  let badge = '', riskIcon = '';
+  if (isMar){
+    badge = `<span class="badge mar">Alto riesgo</span>`;
+    riskIcon = `<span class="risk-icon mar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17.3a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></span>`;
+  } else if (isLasa){
+    badge = `<span class="badge lasa">LASA</span>`;
+    riskIcon = `<span class="risk-icon lasa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16v-4M12 8h.01"/><circle cx="12" cy="12" r="9"/></svg></span>`;
+  }
+
+  const varKey = isMar ? '--risk4' : (isLasa ? '--risk3' : fila.varKey);
+
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.className = 'med-card';
+  card.style.setProperty('--risk', `var(${varKey})`);
+  card.onclick = () => abrirFicha(idx);
+
+  card.innerHTML = `
+    <div class="med-card__top">
+      <div>
+        <h3 class="med-card__name">${med.medicamento.split(' ')[0]}</h3>
+        <p class="med-card__pres">${med.presentacion}</p>
+      </div>
+      ${riskIcon}
+    </div>
+    <div class="dose-preview">
+      <span class="k">Dosis adulto</span>
+      <span class="v tabular">${med.ADULTO_dosis}</span>
+    </div>
+    <div class="med-card__footer">
+      <span>${badge}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </div>`;
+  return card;
+}
+
+function renderDiluyenteCard(item){
+  const card = document.createElement('div');
+  card.className = 'med-card is-diluyente';
+  card.style.setProperty('--risk', 'var(--dil)');
+  card.innerHTML = `
+    <div class="med-card__top">
+      <div>
+        <h3 class="med-card__name">${item.medicamento.split(' ').slice(0,2).join(' ')}</h3>
+        <p class="med-card__pres">${item.presentacion}</p>
+      </div>
+      <span class="risk-icon dil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6 6.6 6 11.3a6 6 0 0 1-12 0c0-4.7 6-11.3 6-11.3Z"/></svg></span>
+    </div>
+    <div class="dose-preview is-diluyente">
+      <span class="k">Tipo</span>
+      <span class="v">Diluyente — sin ficha de dosificación</span>
+    </div>
+    <div class="med-card__footer">
+      <span class="badge dil">Diluyente</span>
+    </div>`;
+  return card;
+}
+
+function applyFilters(){
+  const query = buscador.value.toLowerCase();
+  const filtrados = TODOS.filter(item =>
+    item.medicamento.toLowerCase().includes(query) ||
+    item.presentacion.toLowerCase().includes(query) ||
+    (item.grupo_farmacologico || '').toLowerCase().includes(query)
+  );
+  renderCarro(filtrados);
+}
+
+function abrirFicha(index){
+  const med = ARSENAL[index];
+  const viewList = document.getElementById('main-view');
+  const viewDetail = document.getElementById('detail-view');
+  const fichaHeader = document.getElementById('ficha-header');
+  const fichaContent = document.getElementById('ficha-content');
+
+  let riskAlert = '';
+  if (med.etiqueta_PARA){
+    riskAlert = `
+      <div class="para-banner">
+        <div class="para-icon">
+          <img src="PARA.jpg" alt="Alerta PARA" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <svg class="para-icon-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17.3a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </div>
+        <div>
+          <h4>Medicamento de alto riesgo</h4>
+          <div class="steps"><span>Piensa</span><span>Asegúrate</span><span>Revisa</span><span>Administra</span></div>
+          <p class="sub">Doble verificación: medicamento · concentración · dosis · vía</p>
+        </div>
+      </div>`;
+  }
+
+  fichaHeader.innerHTML = `
+    <p class="ficha-eyebrow">${med.grupo_farmacologico}</p>
+    <h2 class="ficha-title">${med.medicamento}</h2>
+    <p class="ficha-pres tabular">${med.presentacion}</p>
+    ${riskAlert}`;
+
+  let botonesAlgoritmos = '';
+  if (med.algoritmos_asociados && med.algoritmos_asociados.length){
+    botonesAlgoritmos = med.algoritmos_asociados.map(algo => `
+      <div class="algo-chip">
+        <span class="left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/></svg>
+          ${algo}
+        </span>
+      </div>`).join('');
+  }
+
+  const obsBlock = med.observaciones ? `
+    <div class="obs-box">
+      <h5>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17.3a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        Observaciones
+      </h5>
+      <p>${med.observaciones}</p>
+    </div>` : '';
+
+  fichaContent.innerHTML = `
+    <div class="ficha-body">
+      <div class="segmented">
+        <button id="btn-adulto" class="active" onclick="switchTab('adulto')">ADULTO</button>
+        <button id="btn-pediatria" onclick="switchTab('pediatria')">PEDIATRÍA</button>
+      </div>
+
+      <div id="panel-adulto" style="display:block;">
+        <div class="panel">
+          <div class="panel-row"><p class="k">Dosis recomendada</p><p class="v-lg tabular">${med.ADULTO_dosis}</p></div>
+          <div class="panel-row"><p class="k">Dilución</p><p class="v-md tabular">${med.ADULTO_dilucion}</p></div>
+          <div class="panel-row"><p class="k">Concentración máxima</p><p class="v-md tabular">${med.ADULTO_velocidad}</p></div>
+          <div class="panel-row"><p class="k">Vía de administración</p><p class="v-sm">${med.via_administracion}</p></div>
+        </div>
+        <div class="reco-box">
+          <h5>Recomendaciones de uso</h5>
+          <p>${med.ADULTO_recomendaciones}</p>
+        </div>
+      </div>
+
+      <div id="panel-pediatria" style="display:none;">
+        <div class="panel">
+          <div class="panel-row"><p class="k pedia">Dosis recomendada pediátrica</p><p class="v-lg tabular">${med.PEDIATRIA_dosis}</p></div>
+          <div class="panel-row"><p class="k pedia">Dilución pediátrica</p><p class="v-md pedia tabular">${med.PEDIATRIA_dilucion}</p></div>
+          <div class="panel-row"><p class="k pedia">Concentración máxima</p><p class="v-md pedia tabular">${med.PEDIATRIA_velocidad}</p></div>
+          <div class="panel-row"><p class="k pedia">Vía de administración</p><p class="v-sm">${med.via_administracion}</p></div>
+        </div>
+        <div class="reco-box pedia">
+          <h5>Recomendaciones de uso</h5>
+          <p>${med.PEDIATRIA_recomendaciones}</p>
+        </div>
+      </div>
+
+      ${obsBlock}
+
+      ${botonesAlgoritmos ? `
+      <p class="algo-title">Protocolos / algoritmos relacionados</p>
+      <div class="algo-list">${botonesAlgoritmos}</div>` : ''}
+    </div>`;
+
+  document.body.classList.add('ficha-open');
+  viewList.style.display = 'none';
+  viewDetail.style.display = 'flex';
+  viewDetail.classList.remove('slide-out');
+  viewDetail.classList.add('slide-in');
+  fichaContent.scrollTop = 0;
+}
+
+function switchTab(tab){
+  const pAdulto = document.getElementById('panel-adulto');
+  const pPedia = document.getElementById('panel-pediatria');
+  const btnAdulto = document.getElementById('btn-adulto');
+  const btnPedia = document.getElementById('btn-pediatria');
+
+  if (tab === 'adulto'){
+    pAdulto.style.display = 'block';
+    pPedia.style.display = 'none';
+    btnAdulto.classList.add('active'); btnAdulto.classList.remove('pedia');
+    btnPedia.classList.remove('active');
+  } else {
+    pPedia.style.display = 'block';
+    pAdulto.style.display = 'none';
+    btnPedia.classList.add('active'); btnPedia.classList.add('pedia');
+    btnAdulto.classList.remove('active');
+  }
+}
+
+function cerrarFicha(){
+  const viewList = document.getElementById('main-view');
+  const viewDetail = document.getElementById('detail-view');
+  viewDetail.classList.remove('slide-in');
+  viewDetail.classList.add('slide-out');
+  setTimeout(() => {
+    viewDetail.style.display = 'none';
+    viewList.style.display = 'block';
+    document.body.classList.remove('ficha-open');
+  }, 200);
+}
+
+const nightToggle = document.getElementById('nightToggle');
+const nightLabel = document.getElementById('nightLabel');
+
+function setNight(on){
+  document.documentElement.classList.toggle('night', on);
+  nightToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+  nightLabel.textContent = on ? 'Modo noche' : 'Modo día';
+  try { localStorage.setItem('crs-night', on ? '1' : '0'); } catch(e){}
+}
+nightToggle.addEventListener('click', () => {
+  setNight(!document.documentElement.classList.contains('night'));
+});
+try {
+  if (localStorage.getItem('crs-night') === '1') setNight(true);
+} catch(e){}
+
+buildRowNav();
+buscador.addEventListener('input', applyFilters);
+renderCarro(TODOS);
+</script>
+</body>
+</html>
