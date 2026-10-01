@@ -1,0 +1,20 @@
+{
+  "name": "Carro de Paro Digital - CRS Hospital Provincia Cordillera",
+  "short_name": "Carro de Paro",
+  "description": "Consulta rápida y segura de medicamentos del carro de paro.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B2E4E",
+  "theme_color": "#0B2E4E",
+  "lang": "es-CL",
+  "icons": [
+    {
+      "src": "Logo-CRS.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
