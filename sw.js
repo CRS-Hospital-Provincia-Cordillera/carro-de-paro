@@ -18,12 +18,18 @@
    antigua en todos los dispositivos.
    ================================================================ */
 
-const CACHE_NAME = 'carro-paro-v5-2026-09';
+const CACHE_NAME = 'carro-paro-v6-2026-11';
 const STATIC_ASSETS = [
   './index.html',
   './manifest.json',
   './Logo-CRS.png',
-  './PARA.jpg'
+  './PARA.jpg',
+  './favicon.ico',
+  './assets/brand/cdp-icono.svg',
+  './assets/brand/cdp-favicon.svg',
+  './assets/brand/icon-192.png',
+  './assets/brand/icon-512.png',
+  './assets/brand/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {

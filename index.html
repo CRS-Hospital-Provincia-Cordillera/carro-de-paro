@@ -7,6 +7,10 @@
 <meta name="description" content="Consulta rápida y segura de medicamentos del carro de paro.">
 <meta name="theme-color" content="#0B2E4E">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="assets/brand/cdp-favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Carro de Paro">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -93,13 +97,13 @@ html.night .ecg-line{stroke:#3FD9C7;}
 .topbar{position:sticky; top:0; z-index:40; background:var(--navy); color:#fff;}
 .topbar__inner{max-width:1240px; margin:0 auto; padding:16px 20px 14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
 .brandmark{
-  width:42px; height:42px; border-radius:11px; flex:none;
-  background:linear-gradient(155deg, var(--teal) 0%, var(--teal-deep) 100%);
+  width:46px; height:46px; border-radius:12px; flex:none;
+  background:transparent;
   display:flex; align-items:center; justify-content:center;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
   overflow:hidden;
 }
-.brandmark img{width:100%; height:100%; object-fit:contain; padding:5px;}
+.brandmark img{width:100%; height:100%; object-fit:contain; padding:0;}
 .brandmark svg.brandmark-fallback{width:24px; height:24px; display:none;}
 .brand-text h1{font-size:17px; font-weight:700; letter-spacing:.01em; line-height:1.15; color:#fff;}
 .brand-text p{font-size:11.5px; color:rgba(255,255,255,.62); font-weight:500; margin-top:2px;}
@@ -371,7 +375,7 @@ html.night .reco-box.pedia{background:#26190A;}
   <header class="topbar">
     <div class="topbar__inner">
       <div class="brandmark">
-        <img src="Logo-CRS.png" alt="Logo CRS" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <img src="assets/brand/cdp-favicon.svg" alt="Carro de Paro Digital" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <svg class="brandmark-fallback" viewBox="0 0 24 24" fill="none"><path d="M12 3v6M12 15v6M3 12h6M15 12h6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>
       </div>
       <div class="brand-text">
